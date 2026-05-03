@@ -4,7 +4,7 @@ import SwiftUI
 struct LovelyGrandchildrenApp: App {
     var body: some Scene {
         WindowGroup {
-            IntroView()
+            SplashView()
         }
     }
 }

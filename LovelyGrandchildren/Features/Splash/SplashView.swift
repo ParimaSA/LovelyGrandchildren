@@ -1,13 +1,6 @@
-//
-//  ContentView.swift
-//  LovelyGrandchildren
-//
-//  Created by Tho Sangsirakoup on 17/3/2569 BE.
-//
-
 import SwiftUI
 
-struct IntroView: View {
+struct SplashView: View {
     @State private var goToHome = false
     
     var body: some View {
@@ -28,5 +21,5 @@ struct IntroView: View {
 }
 
 #Preview {
-    IntroView()
+    SplashView()
 }
