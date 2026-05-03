@@ -28,7 +28,7 @@ struct GrandchildrenView: View {
                 Spacer()
                     .frame(height: 200)
 
-                // Title
+                // Header
                 Text("Grandchildren")
                     .font(.custom("IrishGrover-Regular", size: 32))
                     .foregroundColor(primaryPink)
