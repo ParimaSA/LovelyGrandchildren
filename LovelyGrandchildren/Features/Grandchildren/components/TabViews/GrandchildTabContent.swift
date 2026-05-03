@@ -15,7 +15,7 @@ struct GrandchildTabContent: View {
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 20)
-            .padding(.bottom, 80)
+            .padding(.bottom, 20)
         }
     }
 }
