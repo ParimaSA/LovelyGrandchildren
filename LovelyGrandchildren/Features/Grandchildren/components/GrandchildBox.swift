@@ -11,7 +11,7 @@ struct GrandchildBox: View {
                 .fill(child.color)
                 .frame(width: boxSize, height: boxSize)
 
-            // Child photo — fills the box, clipped to rounded rect
+            // Child photo
             Image(child.imageName)
                 .resizable()
                 .scaledToFill()
