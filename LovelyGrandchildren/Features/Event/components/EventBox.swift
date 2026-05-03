@@ -55,7 +55,7 @@ struct EventBox: View {
                 .padding(.vertical, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                // Right — Icon
+                // Right — Image
                 ZStack {
                     event.type.color
                         .clipShape(
@@ -67,7 +67,7 @@ struct EventBox: View {
                             )
                         )
 
-                    Image(systemName: event.type.imageName)
+                    Image(event.type.imageName)
                         .font(.system(size: 36, weight: .medium))
                         .foregroundColor(.black.opacity(0.4))
                 }
