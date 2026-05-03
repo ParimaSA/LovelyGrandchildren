@@ -77,7 +77,6 @@ struct EventBox: View {
             .frame(height: 110)
             .background(event.type.color)
             .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: .black.opacity(0.07), radius: 8, x: 0, y: 4)
         }
         .buttonStyle(.plain)
     }
