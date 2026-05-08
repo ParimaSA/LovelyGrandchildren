@@ -1,16 +1,16 @@
 import SwiftUI
 
 struct GrandchildTabContent: View {
-    let child: Grandchild
+    let mascot: Mascot
     let selectedTab: ProfileTab
 
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 16) {
                 switch selectedTab {
-                case .profile: ProfileTabView(child: child)
-                case .event:   EventTabView(child: child)
-                case .parent:  ParentTabView(child: child)
+                case .profile: ProfileTabView(mascot: mascot)
+                case .event:   EventTabView(mascot: mascot)
+                case .parent:  ParentTabView(mascot: mascot)
                 }
             }
             .padding(.horizontal, 20)

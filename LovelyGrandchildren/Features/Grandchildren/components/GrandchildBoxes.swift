@@ -6,11 +6,13 @@ struct GrandchildBoxesSection: View {
     private let speed: CGFloat = 35
 
     @State private var manualOffset: CGFloat = 0
+    @StateObject private var service = FirestoreService()  // firestore
 
-    var children: [Grandchild] = Grandchild.mockList
+
+    //var children: [Grandchild] = Grandchild.mockList
 
     private var itemWidth: CGFloat { boxSize + spacing }
-    private var contentWidth: CGFloat { CGFloat(children.count) * itemWidth }
+    private var contentWidth: CGFloat { CGFloat(service.mascots.count) * itemWidth }
 
     var body: some View {
         GeometryReader { geo in
@@ -18,14 +20,23 @@ struct GrandchildBoxesSection: View {
                 // Scrolling content
                 TimelineView(.animation) { context in
                     let offset = normalizedOffset(for: context.date)
+                    let mascots = service.mascots
 
                     HStack(spacing: spacing) {
                         // Duplicate list for seamless loop
-                        ForEach(0..<(children.count * 2), id: \.self) { index in
-                            let child = children[index % children.count]
+//                        ForEach(0..<(children.count * 2), id: \.self) { index in
+//                            let child = children[index % children.count]
+//
+//                            NavigationLink(destination: GrandchildDetailView(child: child)) {
+//                                GrandchildBox(child: child, boxSize: boxSize)
+//                            }
+//                            .buttonStyle(.plain)
+//                        }
+                        ForEach(0..<(mascots.count * 2), id: \.self) { index in
+                            let mascot = mascots[index % mascots.count]
 
-                            NavigationLink(destination: GrandchildDetailView(child: child)) {
-                                GrandchildBox(child: child, boxSize: boxSize)
+                            NavigationLink(destination: GrandchildDetailView(mascot: mascot)) {
+                                GrandchildBox(mascot: mascot, boxSize: boxSize)
                             }
                             .buttonStyle(.plain)
                         }
@@ -49,6 +60,7 @@ struct GrandchildBoxesSection: View {
             .frame(width: geo.size.width, height: boxSize)
         }
         .frame(height: boxSize)
+        .onAppear { service.fetchMascots() } 
     }
 
     private func normalizedOffset(for date: Date) -> CGFloat {

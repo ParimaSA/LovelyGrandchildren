@@ -1,29 +1,19 @@
 import SwiftUI
+import FirebaseCore
 
 struct EventDetailView: View {
     let event: Event
 
     private let primaryPink = Color(red: 230/255, green: 103/255, blue: 199/255)
+    @StateObject private var service = FirestoreService()
 
-    private var formattedDate: String {
-        let f = DateFormatter()
-        f.dateFormat = "d MMMM yyyy"
-        f.calendar = Calendar(identifier: .gregorian)
-        f.locale = Locale(identifier: "en_GB")
-        return f.string(from: event.date)
+    private var members: [Mascot] {
+        service.mascots.filter { mascot in
+            guard let id = mascot.id else { return false }
+            return event.members.contains(id)
+        }
     }
-
-    private var formattedTime: String {
-        let f = DateFormatter()
-        f.dateFormat = "h:mm a"
-        f.calendar = Calendar(identifier: .gregorian)
-        return f.string(from: event.date)
-    }
-
-    private var members: [Grandchild] {
-        Grandchild.mockList.filter { event.memberIds.contains($0.id) }
-    }
-
+    
     var body: some View {
         ZStack {
             Image("bg")
@@ -59,14 +49,14 @@ struct EventDetailView: View {
                             HStack(spacing: 10) {
                                 Image(systemName: "calendar")
                                     .foregroundColor(.black.opacity(0.5))
-                                Text("\(formattedDate) — \(formattedTime)")
+                                Text(event.dateFormatted)
                                     .font(.custom("Jua-Regular", size: 16))
                             }
 
                             HStack(spacing: 10) {
                                 Image(systemName: "mappin.and.ellipse")
                                     .foregroundColor(.black.opacity(0.5))
-                                Text(event.location)
+                                Text(event.place)
                                     .font(.custom("Jua-Regular", size: 16))
                             }
                         }
@@ -77,7 +67,7 @@ struct EventDetailView: View {
                         .padding(.horizontal, 20)
 
                         // Map
-                        EventMapView(locationName: event.location)
+                        EventMapView(eventId: event.id ?? "")
                             .frame(height: 200)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                             .padding(.horizontal, 20)
@@ -100,11 +90,68 @@ struct EventDetailView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            service.fetchMascots()
+            service.fetchEvents()
+        }
     }
 }
 
 #Preview {
-    NavigationStack {
-        EventDetailView(event: Event.mockList[0])
+    struct PreviewWrapper: View {
+        @StateObject private var service = FirestoreService()
+        @State private var event: Event?
+        @State private var isLoading = true
+        
+        var body: some View {
+            Group {
+                if let event = event {
+                    NavigationStack {
+                        EventDetailView(event: event)
+                    }
+                } else if isLoading {
+                    VStack {
+                        ProgressView("Loading events from Firestore...")
+                        Text("Make sure you have internet connection")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                            .padding(.top, 8)
+                    }
+                } else if service.events.isEmpty {
+                    VStack {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 40))
+                            .foregroundColor(.orange)
+                        Text("No events found in Firestore")
+                            .font(.headline)
+                            .padding(.top, 8)
+                        Text("Please add events to your Firestore database")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                } else {
+                    VStack {
+                        Text("Events loaded but not showing?")
+                            .foregroundColor(.red)
+                        Button("Retry") {
+                            event = service.events.first
+                        }
+                    }
+                }
+            }
+            .onAppear {
+                isLoading = true
+                service.fetchMascots()
+                service.fetchEvents()
+                
+            }
+            .onReceive(service.$events) { events in
+                if event == nil && !events.isEmpty {
+                    event = events.first
+                }
+            }
+        }
     }
+    
+    return PreviewWrapper()
 }

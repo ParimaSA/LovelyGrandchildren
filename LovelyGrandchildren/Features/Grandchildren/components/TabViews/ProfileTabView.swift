@@ -1,16 +1,16 @@
 import SwiftUI
 
 struct ProfileTabView: View {
-    let child: Grandchild
+    let mascot: Mascot
     let primaryBlue = Color(red: 126/255, green: 197/255, blue: 255/255)
 
-    private var formattedBirthday: String {
-        let f = DateFormatter()
-        f.dateFormat = "d MMMM yyyy"
-        f.calendar = Calendar(identifier: .gregorian)
-        f.locale = Locale(identifier: "en_GB")
-        return f.string(from: child.birthday)
-    }
+//    private var formattedBirthday: String {
+//        let f = DateFormatter()
+//        f.dateFormat = "d MMMM yyyy"
+//        f.calendar = Calendar(identifier: .gregorian)
+//        f.locale = Locale(identifier: "en_GB")
+//        return f.string(from: child.birthday)
+//    }
 
     var body: some View {
         VStack(spacing: 14) {
@@ -23,7 +23,7 @@ struct ProfileTabView: View {
                     Text("Birthday")
                         .font(.custom("Jua-Regular", size: 12))
                         .foregroundColor(.gray)
-                    Text(formattedBirthday)
+                    Text(mascot.birthDateFormatted)
                         .font(.custom("Jua-Regular", size: 16))
                         .foregroundColor(.black)
                 }
@@ -39,7 +39,7 @@ struct ProfileTabView: View {
                     .font(.custom("Jua-Regular", size: 14))
                     .foregroundColor(.gray)
 
-                ForEach(child.socials) { social in
+                ForEach(mascot.socials) { social in
                     Link(destination: URL(string: social.url)!) {
                         HStack(spacing: 12) {
                             ZStack {
@@ -71,7 +71,7 @@ struct ProfileTabView: View {
             }
 
             // Merchandise
-            if let merch = child.merchandiseURL, let url = URL(string: merch) {
+            if let merch = mascot.merchandise_link, let url = URL(string: merch) {
                 Link(destination: url) {
                     HStack(spacing: 12) {
                         Image(systemName: "cart.fill")
