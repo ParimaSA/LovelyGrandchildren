@@ -75,10 +75,10 @@ struct GrandchildDetailView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.bottom, 16)
                         .background(mascot.themeColor)
-                        .padding(.horizontal, 24)
                         .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .padding(.horizontal, 24)
                     }
-                    .padding(.top, 16)
+                    .padding(.top, 10)
                 }
                 .frame(maxWidth: .infinity)
 
@@ -86,7 +86,7 @@ struct GrandchildDetailView: View {
                 VStack(spacing: 16) {
                     GrandchildTabContent(mascot: mascot, selectedTab: selectedTab)
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 10)
                 .padding(.vertical, 20)
                 .padding(.bottom, 80)
             }

@@ -9,7 +9,7 @@ struct ProfileTabView: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            HStack(alignment: .top, spacing: 12) {
+            HStack(alignment: .top, spacing: 10) {
 
                 // SOCIAL ICONS
                 VStack(alignment: .leading, spacing: 10) {
@@ -62,7 +62,7 @@ struct ProfileTabView: View {
                         .padding(.horizontal, 10)
                     }
                     .frame(width: 140, height: 100)
-                    .padding(20)
+                    .padding(.bottom, 35)
 
                     // Flowers image
                     Image("flowers")
@@ -82,7 +82,7 @@ struct ProfileTabView: View {
                         Image("merch")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(height: 60)
+                            .frame(width: 60, height: 70)
 
                         ZStack {
                             RoundedRectangle(cornerRadius: 8)
