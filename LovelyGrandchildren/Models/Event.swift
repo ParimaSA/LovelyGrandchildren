@@ -29,10 +29,10 @@ enum EventType: String {
 struct Event: Identifiable, Codable {
     @DocumentID var id: String?
     var name: String
-    var type: String          // "concert", "meeting"
+    var type: String
     var date: Timestamp
     var place: String
-    var members: [String]     // array of mascot ids as strings
+    var members: [String]
     var geolocation: GeoPoint?
     
     // Formatted date: "7 March 2026, 16:00"

@@ -6,10 +6,7 @@ struct GrandchildBoxesSection: View {
     private let speed: CGFloat = 35
 
     @State private var manualOffset: CGFloat = 0
-    @StateObject private var service = FirestoreService()  // firestore
-
-
-    //var children: [Grandchild] = Grandchild.mockList
+    @StateObject private var service = FirestoreService() // firstore
 
     private var itemWidth: CGFloat { boxSize + spacing }
     private var contentWidth: CGFloat { CGFloat(service.mascots.count) * itemWidth }
@@ -18,34 +15,37 @@ struct GrandchildBoxesSection: View {
         GeometryReader { geo in
             ZStack {
                 // Scrolling content
-                TimelineView(.animation) { context in
-                    let offset = normalizedOffset(for: context.date)
-                    let mascots = service.mascots
-
+                if service.mascots.isEmpty {
+                    // Show loading when no mascots
                     HStack(spacing: spacing) {
-                        // Duplicate list for seamless loop
-//                        ForEach(0..<(children.count * 2), id: \.self) { index in
-//                            let child = children[index % children.count]
-//
-//                            NavigationLink(destination: GrandchildDetailView(child: child)) {
-//                                GrandchildBox(child: child, boxSize: boxSize)
-//                            }
-//                            .buttonStyle(.plain)
-//                        }
-                        ForEach(0..<(mascots.count * 2), id: \.self) { index in
-                            let mascot = mascots[index % mascots.count]
-
-                            NavigationLink(destination: GrandchildDetailView(mascot: mascot)) {
-                                GrandchildBox(mascot: mascot, boxSize: boxSize)
-                            }
-                            .buttonStyle(.plain)
+                        ForEach(0..<6, id: \.self) { _ in
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: boxSize, height: boxSize)
                         }
                     }
-                    .frame(width: contentWidth * 2, alignment: .leading)
-                    .offset(x: -offset)
+                    .frame(width: geo.size.width, height: boxSize, alignment: .leading)
+                } else {
+                    TimelineView(.animation) { context in
+                        let offset = normalizedOffset(for: context.date)
+                        let mascots = service.mascots
+
+                        HStack(spacing: spacing) {
+                            ForEach(0..<(mascots.count * 2), id: \.self) { index in
+                                let mascot = mascots[index % mascots.count]
+
+                                NavigationLink(destination: GrandchildDetailView(mascot: mascot)) {
+                                    GrandchildBox(mascot: mascot, boxSize: boxSize)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .frame(width: contentWidth * 2, alignment: .leading)
+                        .offset(x: -offset)
+                    }
+                    .frame(width: geo.size.width, height: boxSize, alignment: .leading)
+                    .clipped()
                 }
-                .frame(width: geo.size.width, height: boxSize, alignment: .leading)
-                .clipped()
 
                 // Arrow buttons on top
                 ArrowOverlay(
@@ -60,17 +60,22 @@ struct GrandchildBoxesSection: View {
             .frame(width: geo.size.width, height: boxSize)
         }
         .frame(height: boxSize)
-        .onAppear { service.fetchMascots() } 
+        .onAppear {
+            // Only fetch if empty
+            if service.mascots.isEmpty {
+                service.fetchMascots()
+            }
+        }
     }
 
     private func normalizedOffset(for date: Date) -> CGFloat {
+        guard contentWidth > 0 else { return 0 }
         let time = date.timeIntervalSinceReferenceDate
         let raw  = CGFloat(time) * speed + manualOffset
         let rem  = raw.truncatingRemainder(dividingBy: contentWidth)
         return rem >= 0 ? rem : rem + contentWidth
     }
 }
-
 
 private struct ArrowOverlay: View {
     let height: CGFloat
@@ -83,12 +88,13 @@ private struct ArrowOverlay: View {
         HStack {
             Button(action: onLeft) {
                 ZStack {
-                    Rectangle().fill(primaryBlue)
+                    Rectangle()
+                        .fill(primaryBlue)
+                        .frame(width: 44, height: height)
                     Image(systemName: "chevron.left")
                         .font(.system(size: 24, weight: .bold))
                         .foregroundColor(.white)
                 }
-                .frame(width: 44, height: height)
             }
             .buttonStyle(.plain)
 
@@ -96,12 +102,13 @@ private struct ArrowOverlay: View {
 
             Button(action: onRight) {
                 ZStack {
-                    Rectangle().fill(primaryBlue)
+                    Rectangle()
+                        .fill(primaryBlue)
+                        .frame(width: 44, height: height)
                     Image(systemName: "chevron.right")
                         .font(.system(size: 24, weight: .bold))
                         .foregroundColor(.white)
                 }
-                .frame(width: 44, height: height)
             }
             .buttonStyle(.plain)
         }

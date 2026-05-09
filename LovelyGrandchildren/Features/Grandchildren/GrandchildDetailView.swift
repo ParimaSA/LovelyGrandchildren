@@ -34,7 +34,6 @@ struct GrandchildDetailView: View {
 
                 Spacer().frame(height: 20)
                 
-                // Image
                 ZStack(alignment: .bottom) {
                     VStack(spacing: 12) {
                         Text(mascot.name.uppercased())
@@ -46,29 +45,50 @@ struct GrandchildDetailView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                             .padding(.horizontal, 24)
 
-                        Image(mascot.mascot_image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 180)
-                            .frame(maxWidth: .infinity)
-                            .padding(.bottom, 16)
-                            .background(mascot.themeColor)
-                            .padding(.horizontal, 24)
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                        // Use AsyncImage for remote URL
+                        AsyncImage(url: URL(string: mascot.mascot_image)) { phase in
+                            switch phase {
+                            case .empty:
+                                ZStack {
+                                    Rectangle()
+                                        .fill(mascot.themeColor.opacity(0.3))
+                                    ProgressView()
+                                        .tint(primaryPink)
+                                }
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                            case .failure:
+                                ZStack {
+                                    Rectangle()
+                                        .fill(mascot.themeColor.opacity(0.3))
+                                    Image(systemName: "person.circle.fill")
+                                        .font(.system(size: 60))
+                                        .foregroundColor(.gray)
+                                }
+                            @unknown default:
+                                EmptyView()
+                            }
+                        }
+                        .frame(height: 180)
+                        .frame(maxWidth: .infinity)
+                        .padding(.bottom, 16)
+                        .background(mascot.themeColor)
+                        .padding(.horizontal, 24)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
                     .padding(.top, 16)
                 }
                 .frame(maxWidth: .infinity)
 
                 // Tab Content
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 16) {
-                        GrandchildTabContent(mascot: mascot, selectedTab: selectedTab)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 20)
-                    .padding(.bottom, 80)
+                VStack(spacing: 16) {
+                    GrandchildTabContent(mascot: mascot, selectedTab: selectedTab)
                 }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 20)
+                .padding(.bottom, 80)
             }
         }
         // Tab Bar
@@ -80,9 +100,7 @@ struct GrandchildDetailView: View {
     }
 }
 
-
 private struct ChildHeaderView: View {
-//    let child: Grandchild
     let mascot: Mascot
     let primaryBlue: Color
 
@@ -97,25 +115,30 @@ private struct ChildHeaderView: View {
                     .background(primaryBlue)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .padding(.horizontal, 24)
-                    // AsyncImage since mascot_image is a URL string
-                    AsyncImage(url: URL(string: mascot.mascot_image)) { image in
-                        image.resizable().scaledToFit()
-                    } placeholder: {
-                        ProgressView()
+                
+                AsyncImage(url: URL(string: mascot.mascot_image)) { image in
+                    image.resizable()
+                        .scaledToFit()
+                } placeholder: {
+                    ZStack {
+                        Color.gray.opacity(0.2)
+                        Image(systemName: "person.circle.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.gray)
                     }
-                    .frame(height: 180)
-                    .frame(maxWidth: .infinity)
-                    .padding(.bottom, 16)
-                    .background(mascot.themeColor )
-                    .padding(.horizontal, 24)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                }
+                .frame(height: 180)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 16)
+                .background(mascot.themeColor)
+                .padding(.horizontal, 24)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
             }
             .padding(.top, 16)
         }
         .frame(maxWidth: .infinity)
     }
 }
-
 
 #Preview {
     struct PreviewWrapper: View {
@@ -137,7 +160,6 @@ private struct ChildHeaderView: View {
                             .padding(.top, 8)
                     }
                 } else {
-                    // Show first mascot from Firestore
                     NavigationStack {
                         GrandchildDetailView(mascot: service.mascots[0])
                     }

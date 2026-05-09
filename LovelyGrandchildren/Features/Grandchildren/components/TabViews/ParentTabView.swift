@@ -5,13 +5,13 @@ struct ParentTabView: View {
     let primaryPink = Color(red: 230/255, green: 103/255, blue: 199/255)
     
     @StateObject private var service = FirestoreService()
+    @State private var isLoading = true
 
     var body: some View {
         VStack(spacing: 12) {
-            if service.parents.isEmpty && !hasFetched {
+            if isLoading {
                 VStack {
-                    ProgressView()
-                        .tint(primaryPink)
+                    ProgressView().tint(primaryPink)
                     Text("Loading parents...")
                         .font(.custom("Jua-Regular", size: 14))
                         .foregroundColor(.gray)
@@ -30,111 +30,107 @@ struct ParentTabView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 50)
             } else {
-                ForEach(service.parents) { parent in
+                ForEach(Array(service.parents.enumerated()), id: \.element.id) { index, parent in
                     if let url = URL(string: "https://instagram.com/\(parent.ig_account)") {
                         Link(destination: url) {
-                            ParentCard(parent: parent, primaryPink: primaryPink)
+                            ParentCard(parent: parent, index: index)
                         }
                     }
                 }
             }
         }
         .onAppear {
-            guard let mascotId = mascot.id else { return }
+            guard let mascotId = mascot.id else {
+                isLoading = false
+                return
+            }
             service.fetchParents(for: mascotId)
+            
+            // Set loading false after a short delay or when parents load
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                isLoading = false
+            }
         }
-    }
-    
-    private var hasFetched: Bool {
-        return false
+        .onReceive(service.$parents) { parents in
+            // Update loading state when parents are loaded
+            if !parents.isEmpty || !isLoading {
+                isLoading = false
+            }
+        }
     }
 }
 
 struct ParentCard: View {
     let parent: Parent
-    let primaryPink: Color
-    
+    let index: Int
+    private let cardHeight: CGFloat = 100  // Fixed height for the card
+
+    // colors
+    private var boxColor: Color {
+        index % 2 == 0
+            ? Color(red: 255/255, green: 211/255, blue: 212/255)  // FFD3D4
+            : Color(red: 227/255, green: 214/255, blue: 255/255)  // E3D6FF
+    }
+
+    private var textColor: Color {
+        index % 2 == 0
+            ? Color(red: 255/255, green: 110/255, blue: 112/255)  // FF6E70
+            : Color(red: 147/255, green: 145/255, blue: 255/255)  // 9391FF
+    }
+
     var body: some View {
-        HStack(spacing: 14) {
-            // Parent Image
-            AsyncImage(url: URL(string: parent.parent_image)) { image in
-                image.resizable()
-                    .scaledToFill()
-            } placeholder: {
-                ZStack {
-                    Color.gray.opacity(0.2)
-                    Image(systemName: "person.circle.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(.gray)
+        HStack(spacing: 0) {
+            // Image section - fixed height matching the card
+            AsyncImage(url: URL(string: parent.parent_image)) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                case .empty:
+                    boxColor.opacity(0.5)
+                        .overlay(ProgressView())
+                case .failure:
+                    boxColor.opacity(0.5)
+                        .overlay(
+                            Image(systemName: "person.fill")
+                                .font(.system(size: 36))
+                                .foregroundColor(textColor)
+                        )
+                @unknown default:
+                    EmptyView()
                 }
             }
-            .frame(width: 70, height: 70)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .frame(width: 100, height: cardHeight)
+            .clipped()
 
-            VStack(alignment: .leading, spacing: 6) {
+            // Text content
+            VStack(alignment: .leading, spacing: 8) {
                 Text(parent.parent_name)
                     .font(.custom("Jua-Regular", size: 18))
-                    .foregroundColor(primaryPink)
+                    .foregroundColor(textColor)
 
                 HStack(spacing: 6) {
                     Image(systemName: "camera.fill")
                         .font(.system(size: 14))
-                        .foregroundColor(.gray)
-                    Text("@\(parent.ig_account)")
+                        .foregroundColor(textColor.opacity(0.7))
+                    
+                    Text(parent.ig_account)
                         .font(.custom("Jua-Regular", size: 14))
-                        .foregroundColor(.gray)
+                        .foregroundColor(textColor.opacity(0.7))
+                    
+                    Image(systemName: "arrow.up.right")
+                        .font(.system(size: 12))
+                        .foregroundColor(textColor.opacity(0.6))
                 }
             }
-
-            Spacer()
-
-            Image(systemName: "arrow.up.right")
-                .foregroundColor(.gray.opacity(0.5))
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(24)
-        .background(.white)
+        .frame(height: cardHeight)
+        .background(boxColor)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 3)
     }
 }
-
-//    var body: some View {
-//        VStack(spacing: 12) {
-//            ForEach(parents) { parent in
-//                Link(destination: URL(string: parent.instagramURL)!) {
-//                    HStack(spacing: 14) {
-//                        Image(parent.imageName)
-//                            .resizable()
-//                            .scaledToFill()
-//                            .frame(width: 70, height: 70)
-//                            .clipShape(RoundedRectangle(cornerRadius: 12))
-//
-//                        VStack(alignment: .leading, spacing: 6) {
-//                            Text(parent.name)
-//                                .font(.custom("Jua-Regular", size: 18))
-//                                .foregroundColor(primaryPink)
-//
-//                            HStack(spacing: 6) {
-//                                Image(systemName: "camera.fill")
-//                                    .font(.system(size: 14))
-//                                    .foregroundColor(.gray)
-//                                Text(parent.instagramHandle)
-//                                    .font(.custom("Jua-Regular", size: 14))
-//                                    .foregroundColor(.gray)
-//                            }
-//                        }
-//
-//                        Spacer()
-//
-//                        Image(systemName: "arrow.up.right")
-//                            .foregroundColor(.gray.opacity(0.5))
-//                    }
-//                    .padding(24)
-//                    .background(.white)
-//                    .clipShape(RoundedRectangle(cornerRadius: 16))
-//                    .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 3)
-//                }
-//            }
-//        }
-//    }
-//}

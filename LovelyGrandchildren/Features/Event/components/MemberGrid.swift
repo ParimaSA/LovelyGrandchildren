@@ -15,11 +15,18 @@ struct MemberGridView: View {
                                 .fill(mascot.themeColor)
                                 .frame(width: 64, height: 64)
 
-                            Image(mascot.mascot_image)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 64, height: 64)
-                                .clipShape(Circle())
+                            // Use AsyncImage for remote URL
+                            AsyncImage(url: URL(string: mascot.mascot_image)) { image in
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                            } placeholder: {
+                                Image(systemName: "person.circle.fill")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.white)
+                            }
+                            .frame(width: 64, height: 64)
+                            .clipShape(Circle())
                         }
 
                         Text(mascot.name)

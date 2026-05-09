@@ -67,7 +67,7 @@ struct EventDetailView: View {
                         .padding(.horizontal, 20)
 
                         // Map
-                        EventMapView(eventId: event.id ?? "")
+                        EventMapView(event: event)
                             .frame(height: 200)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                             .padding(.horizontal, 20)

@@ -11,12 +11,16 @@ struct GrandchildBox: View {
                 .fill(mascot.themeColor)
                 .frame(width: boxSize, height: boxSize)
 
-            // Child photo
-            Image(mascot.mascot_image)
-                .resizable()
-                .scaledToFill()
-                .frame(width: boxSize, height: boxSize)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
+            // Use AsyncImage for remote URL
+            AsyncImage(url: URL(string: mascot.mascot_image)) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+            } placeholder: {
+                Color.white.opacity(0.3)
+            }
+            .frame(width: boxSize, height: boxSize)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
 
             // Name label at the bottom
             Text(mascot.name)

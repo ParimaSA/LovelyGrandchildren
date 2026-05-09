@@ -13,12 +13,18 @@ struct Mascot: Identifiable, Codable {
     var merchandise_link: String?
     var mascot_image: String
 
-    // "Date month" format
-    var birthDateFormatted: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMMM"
-        formatter.locale = Locale(identifier: "en_US")
-        return formatter.string(from: birth_date.dateValue())
+    
+    var birthDay: String {
+        let f = DateFormatter()
+        f.dateFormat = "d"
+        return f.string(from: birth_date.dateValue())   // "28"
+    }
+    
+    var birthMonth: String {
+        let f = DateFormatter()
+        f.dateFormat = "MMM"
+        f.locale = Locale(identifier: "en_US")
+        return f.string(from: birth_date.dateValue()).uppercased()  // "FEB"
     }
     
     // Build socials from Firestore fields using SocialPlatform colors/icons
@@ -33,7 +39,7 @@ struct Mascot: Identifiable, Codable {
             SocialAccount(
                 platform: .twitter,
                 handle: x_account,
-                url: "https://twitter.com/\(x_account)"
+                url: "https://x.com/\(x_account)"
             ),
             SocialAccount(
                 platform: .tiktok,
@@ -62,18 +68,4 @@ extension Mascot {
         return Mascot.colorPalette[index % Mascot.colorPalette.count]
     }
     
-//    static var mock: Mascot {
-//        Mascot(
-//            id: "1",
-//            name: "Polcasan",
-//            birth_date: Timestamp(date: Calendar.current.date(
-//                from: DateComponents(year: 2024, month: 3, day: 6))!),
-//            created_at: Timestamp(date: Date()),
-//            ig_account: "polcasan.gmmtv",
-//            x_account: "polcasan_GMMTV",
-//            tiktok_account: "polcasan.gmmtv",
-//            merchandise_link: "https://shop.gmm-tv.com/product/polcasan-doll-keychain-th",
-//            mascot_image: ""
-//        )
-//    }
 }
