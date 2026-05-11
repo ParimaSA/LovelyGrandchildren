@@ -4,7 +4,6 @@ LovelyGrandchildren is a Swift‑native iOS mobile application for discovering a
 
 GMMTV mascots are more than cute characters, they are part of "fandom identity and fan engagement". A single app can help fans discover mascots faster, follow events more easily, and stay connected to official updates without confusion.
 
-
 ## Motivation
 Thai mascots and BL series are loved by fans in Thailand and around the world. Many fans discover mascots through viral clips, but the information is often scattered across different official accounts and fan communities.
 
@@ -30,12 +29,6 @@ This project aims to solve that by creating one central place for GMMTV mascot i
 - **Event Tracker**: Fans can browse all upcoming mascot events in one place.
 - **Event Calendar**: A calendar view helps users see event dates more clearly and avoid missing important activities.
 - **Merchandise Links**: The app does not sell products directly, but it provides links to official merch shops.
-
-## Limitations
-
-- The app only supports **GMMTV mascots** for now.
-- Last-minute event cancellations may take time to update.
-- Users cannot buy mascot dolls directly inside the app, it only provides links to official shops and official information sources.
 
 ## Application Preview
 ![LovelyGrandchildren Preview](https://raw.githubusercontent.com/ParimaSA/LovelyGrandchildren/main/LovelyGrandchildrenPreview.png)
