@@ -63,7 +63,7 @@ struct ParentTabView: View {
 struct ParentCard: View {
     let parent: Parent
     let index: Int
-    private let cardHeight: CGFloat = 100  // Fixed height for the card
+    private let cardHeight: CGFloat = 100
 
     // colors
     private var boxColor: Color {
@@ -80,7 +80,6 @@ struct ParentCard: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            // Image section - fixed height matching the card
             AsyncImage(url: URL(string: parent.parent_image)) { phase in
                 switch phase {
                 case .success(let image):

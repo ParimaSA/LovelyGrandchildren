@@ -61,7 +61,6 @@ struct GrandchildBoxesSection: View {
         }
         .frame(height: boxSize)
         .onAppear {
-            // Only fetch if empty
             if service.mascots.isEmpty {
                 service.fetchMascots()
             }
