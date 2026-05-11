@@ -38,17 +38,15 @@ This project aims to solve that by creating one central place for GMMTV mascot i
 - Users cannot buy mascot dolls directly inside the app, it only provides links to official shops and official information sources.
 
 ## Application Preview
-(to be added)
+![LovelyGrandchildren Preview](https://raw.githubusercontent.com/ParimaSA/LovelyGrandchildren/main/LovelyGrandchildrenPreview.png)
 
+## Project Setup
 
-
-### Project Setup
-
-#### Prerequisites
+### Prerequisites
 - macOS with Xcode installed (latest stable version recommended).
 - An Apple ID for signing and simulator testing.
 
-#### Steps
+### Steps
 
 1. Clone the repository:
    ```bash
@@ -68,6 +66,8 @@ This project aims to solve that by creating one central place for GMMTV mascot i
    - `FirebaseStorage`
      
    Make sure to download and add the `GoogleService-Info.plist` file to your Xcode project.
+   
+   After completing the tutorial, go to your project target in Xcode → **General** tab → scroll to **Frameworks, Libraries, and Embedded Content** and add the same Firebase libraries there as well.
 
-4. Run the app:  
+5. Run the app  
    Select a simulator and press Run to build and launch the app.
