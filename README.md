@@ -1,4 +1,4 @@
-# LovelyGrandchildren ✨💖
+# LovelyGrandchildren 🎀✨💖
 
 LovelyGrandchildren is a Swift‑native iOS mobile application for discovering and tracking GMMTV mascots in one place. It helps fans quickly identify mascots, learn their parent artists, and keep up with related events, official channels, and merchandise links.
 
@@ -40,5 +40,34 @@ This project aims to solve that by creating one central place for GMMTV mascot i
 ## Application Preview
 (to be added)
 
-## Project Setup
-(to be added)
+
+
+### Project Setup
+
+#### Prerequisites
+- macOS with Xcode installed (latest stable version recommended).
+- An Apple ID for signing and simulator testing.
+
+#### Steps
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ParimaSA/LovelyGrandchildren.git
+   cd LovelyGrandchildren
+   ```
+
+2. Open the project in Xcode.
+   
+3. Connect to Firebase:  
+   Follow the official iOS setup guide: [Add Firebase to your Apple project](https://firebase.google.com/docs/ios/setup).
+   
+   In step 4, add the following Firebase libraries:  
+   - `FirebaseCore`  
+   - `FirebaseDatabase`  
+   - `FirebaseFirestore`  
+   - `FirebaseStorage`
+     
+   Make sure to download and add the `GoogleService-Info.plist` file to your Xcode project.
+
+4. Run the app:  
+   Select a simulator and press Run to build and launch the app.
