@@ -1,10 +1,11 @@
 import SwiftUI
+import FirebaseCore
 
 struct EventsView: View {
     let primaryPink = Color(red: 230/255, green: 103/255, blue: 199/255)
     let primaryBlue = Color(red: 126/255, green: 197/255, blue: 255/255)
 
-    var events: [Event] = Event.mockList
+    @StateObject private var service = FirestoreService()
     @State private var searchText: String = ""
     @State private var selectedDate: Date? = nil
     @State private var showDatePicker = false
@@ -14,34 +15,29 @@ struct EventsView: View {
     }
 
     private var filtered: [Event] {
-        events
+        service.events
             .filter {
-                // filter event name or location
                 guard !searchText.trimmingCharacters(in: .whitespaces).isEmpty else { return true }
                 return $0.name.localizedCaseInsensitiveContains(searchText) ||
-                    $0.location.localizedCaseInsensitiveContains(searchText)
+                    $0.place.localizedCaseInsensitiveContains(searchText)
             }
             .filter {
-                // filter event date
                 guard let selected = selectedDate else { return true }
-                return gregorian.isDate($0.date, inSameDayAs: selected)
+                return gregorian.isDate($0.date.dateValue(), inSameDayAs: selected)
             }
-            .sorted { $0.date < $1.date }
+            .sorted { $0.date.dateValue() < $1.date.dateValue() }
     }
 
     var body: some View {
         ZStack {
-            // Background
             Image("bg")
                 .resizable()
                 .scaledToFill()
                 .ignoresSafeArea()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            // Header
             VStack(spacing: 0) {
-                Spacer()
-                    .frame(height: 200)
+                Spacer().frame(height: 200)
 
                 Text("Events")
                     .font(.custom("IrishGrover-Regular", size: 32))
@@ -56,12 +52,10 @@ struct EventsView: View {
                 
                 // Filtering
                 HStack(spacing: 10) {
-                    // Search bar
                     HStack(spacing: 10) {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.gray)
-                        
-                        TextField("name or location...", text: $searchText)
+                        TextField("name or place...", text: $searchText)
                             .font(.custom("Jua-Regular", size: 16))
                             .autocorrectionDisabled()
                     }
@@ -70,8 +64,7 @@ struct EventsView: View {
                     .background(.white.opacity(0.85))
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .frame(maxWidth: .infinity)
-                    
-                    // Date filter
+
                     Button {
                         if selectedDate != nil {
                             selectedDate = nil
@@ -79,9 +72,7 @@ struct EventsView: View {
                         } else {
                             showDatePicker.toggle()
                         }
-                    }
-                    
-                    label: {
+                    } label: {
                         HStack(spacing: 6) {
                             Image(systemName: "calendar")
                             Text(selectedDate.map {
@@ -92,7 +83,7 @@ struct EventsView: View {
                                 }.string(from: $0)
                             } ?? "Date")
                             .font(.custom("Jua-Regular", size: 16))
-                            
+
                             if selectedDate != nil {
                                 Image(systemName: "xmark")
                                     .font(.system(size: 11, weight: .bold))
@@ -105,9 +96,9 @@ struct EventsView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                     }
                     .frame(maxWidth: 140)
-                }.padding(.horizontal, 14)
+                }
+                .padding(.horizontal, 14)
 
-                // Calendar for selecting date
                 if showDatePicker {
                     DatePicker(
                         "",
@@ -132,7 +123,6 @@ struct EventsView: View {
 
                 Spacer().frame(height: 16)
 
-                // Filtered Event List or empty state
                 if filtered.isEmpty {
                     Spacer()
                     VStack(spacing: 12) {
@@ -159,10 +149,12 @@ struct EventsView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .padding(.bottom, 20)
+        .onAppear {
+            service.fetchEvents()
+        }
     }
 }
 
-// Helper to configure DateFormatter inline
 extension DateFormatter {
     func apply(_ configure: (DateFormatter) -> Void) -> DateFormatter {
         configure(self)

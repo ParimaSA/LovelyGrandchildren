@@ -1,19 +1,30 @@
 import SwiftUI
+import FirebaseCore
 
 struct RecentEvents: View {
-    private var recentEvents: [Event] {
-        Array(Event.mockList
-            .sorted { $0.date < $1.date }
-            .prefix(2))
-    }
+    @StateObject private var service = FirestoreService()
+    private var sortedRecentEvents: [Event] {
+            service.events
+                .sorted { $0.date.dateValue() < $1.date.dateValue() }
+                .prefix(2)
+                .map { $0 }
+        }
 
     var body: some View {
         VStack(spacing: 12) {
-            ForEach(recentEvents) { event in
-                EventBox(event: event)
+            if service.events.isEmpty {ProgressView().padding()
+            } else {
+                ForEach(sortedRecentEvents) { event in
+                    NavigationLink(destination: EventDetailView(event: event)) {
+                        EventBox(event: event)
+                    }
+                }
             }
         }
         .padding(.horizontal, 16)
+        .onAppear {
+            service.fetchEvents()
+        }
     }
 }
 

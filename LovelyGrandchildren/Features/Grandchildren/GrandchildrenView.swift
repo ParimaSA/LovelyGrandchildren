@@ -4,18 +4,20 @@ struct GrandchildrenView: View {
     let primaryPink = Color(red: 230/255, green: 103/255, blue: 199/255)
     let primaryBlue = Color(red: 126/255, green: 197/255, blue: 255/255)
 
-    var children: [Grandchild] = Grandchild.mockList
     @State private var searchText: String = ""
 
-    private var filtered: [Grandchild] {
+    // firebase
+    @StateObject private var service = FirestoreService()
+    
+    private var filtered: [Mascot] {
         if searchText.trimmingCharacters(in: .whitespaces).isEmpty {
-            return children
+            return service.mascots
         }
-        return children.filter {
+        return service.mascots.filter {
             $0.name.localizedCaseInsensitiveContains(searchText)
         }
     }
-
+    
     var body: some View {
         ZStack {
             Image("bg")
@@ -73,9 +75,9 @@ struct GrandchildrenView: View {
                             columns: [GridItem(.flexible()), GridItem(.flexible())],
                             spacing: 16
                         ) {
-                            ForEach(filtered) { child in
-                                NavigationLink(destination: GrandchildDetailView(child: child)) {
-                                    GrandchildBox(child: child, boxSize: 150)
+                            ForEach(filtered) { mascot in
+                                NavigationLink(destination: GrandchildDetailView(mascot: mascot)) {
+                                    GrandchildBox(mascot: mascot, boxSize: 150)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -89,6 +91,9 @@ struct GrandchildrenView: View {
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            service.fetchMascots()
+        }
     }
 }
 

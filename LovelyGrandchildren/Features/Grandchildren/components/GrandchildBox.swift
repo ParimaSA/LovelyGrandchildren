@@ -1,25 +1,29 @@
 import SwiftUI
 
 struct GrandchildBox: View {
-    let child: Grandchild
+    let mascot: Mascot
     let boxSize: CGFloat
 
     var body: some View {
         ZStack(alignment: .bottom) {
             // Background color
             RoundedRectangle(cornerRadius: 20)
-                .fill(child.color)
+                .fill(mascot.themeColor)
                 .frame(width: boxSize, height: boxSize)
 
-            // Child photo
-            Image(child.imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(width: boxSize, height: boxSize)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
+            // Use AsyncImage for remote URL
+            AsyncImage(url: URL(string: mascot.mascot_image)) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+            } placeholder: {
+                Color.white.opacity(0.3)
+            }
+            .frame(width: boxSize, height: boxSize)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
 
             // Name label at the bottom
-            Text(child.name)
+            Text(mascot.name)
                 .font(.caption.bold())
                 .foregroundColor(.white)
                 .padding(.horizontal, 6)
